@@ -1,6 +1,6 @@
 import {Component, HostListener, Inject, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {POPOUT_MODAL_DATA, POPOUT_MODALS, PopoutData, PopoutModalName} from './popout.tokens';
-import {PopoutService} from './popout.service';
+import {POPOUT_MODAL_DATA, POPOUT_MODALS, PopoutData, PopoutModalName} from './service/popout.tokens';
+import {PopoutService} from './service/popout.service';
 
 @Component({
   selector: 'app-root',

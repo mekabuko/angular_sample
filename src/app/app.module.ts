@@ -6,13 +6,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CustomerComponent } from './customer/customer.component';
 import { EmployerComponent } from './employer/employer.component';
-import { PopoutService } from './popout.service';
+import { PopoutService } from './service/popout.service';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MainpageComponent } from './mainpage/mainpage.component';
 
 @NgModule({
-  imports: [BrowserModule, AppRoutingModule, PortalModule],
+  imports: [BrowserModule, AppRoutingModule, PortalModule, BrowserAnimationsModule],
   exports: [CustomerComponent, EmployerComponent],
   entryComponents: [CustomerComponent, EmployerComponent],
-  declarations: [AppComponent, CustomerComponent, EmployerComponent],
+  declarations: [AppComponent, CustomerComponent, EmployerComponent, MainpageComponent],
   providers: [PopoutService],
   bootstrap: [AppComponent],
 })

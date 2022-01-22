@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, Output } from '@angular/core';
 
-import { POPOUT_MODAL_DATA, PopoutData } from '../popout.tokens';
+import { POPOUT_MODAL_DATA, PopoutData } from '../service/popout.tokens';
 
 @Component({
   selector: 'app-customer',
