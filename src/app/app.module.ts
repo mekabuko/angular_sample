@@ -8,13 +8,12 @@ import { CustomerComponent } from './customer/customer.component';
 import { EmployerComponent } from './employer/employer.component';
 import { PopoutService } from './service/popout.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MainpageComponent } from './mainpage/mainpage.component';
 
 @NgModule({
   imports: [BrowserModule, AppRoutingModule, PortalModule, BrowserAnimationsModule],
   exports: [CustomerComponent, EmployerComponent],
   entryComponents: [CustomerComponent, EmployerComponent],
-  declarations: [AppComponent, CustomerComponent, EmployerComponent, MainpageComponent],
+  declarations: [AppComponent, CustomerComponent, EmployerComponent],
   providers: [PopoutService],
   bootstrap: [AppComponent],
 })
