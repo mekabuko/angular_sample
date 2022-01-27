@@ -1,24 +1,22 @@
-import { ComponentPortal, DomPortalOutlet } from '@angular/cdk/portal';
+import {
+  ComponentPortal,
+  ComponentType,
+  DomPortalOutlet,
+} from '@angular/cdk/portal';
 import {
   ApplicationRef,
   ComponentFactoryResolver,
   ComponentRef,
   Injectable,
+  InjectionToken,
   Injector,
   OnDestroy,
 } from '@angular/core';
-import {
-  POPOUT_MODAL_DATA,
-  POPOUT_MODALS,
-  PopoutData,
-  PopoutModalName,
-} from './popout.tokens';
-import { CustomerComponent } from '../customer/customer.component';
-import { EmployerComponent } from '../employer/employer.component';
 
 @Injectable()
 export class PopoutService implements OnDestroy {
   styleSheetElement: any;
+  POPOUT_MODALS: any = {};
 
   constructor(
     private injector: Injector,
@@ -28,116 +26,100 @@ export class PopoutService implements OnDestroy {
 
   ngOnDestroy() {}
 
-  openPopoutModal(data: any) {
-    const windowInstance = this.openOnce(
-      'assets/modal/popout.html',
-      'MODAL_POPOUT'
-    );
+  openPopoutModal<T, K>(type: ComponentType<T>, token: InjectionToken<K> ,data: any) {
+    const windowInstance = this.openOnce(Date.now().toString()); //TODO
+    const newData = data;
+    newData['window'] = windowInstance;
 
     // Wait for window instance to be created
     setTimeout(() => {
-      this.createCDKPortal(data, windowInstance);
+      windowInstance && this.createCDKPortal(type, token, newData, windowInstance);
     }, 1000);
   }
 
-  openOnce(url: any, target: any) {
+  openOnce(target: string) {
     // Open a blank "target" window
     // or get the reference to the existing "target" window
     // const winRef = window.open('', target, '', true);
-    const winRef = window.open('', target, '_blank');
+    const winRef = window.open('', target, '_blank, width=10,height=10');
     // If the "target" window was just opened, change its url
-    if (winRef!.location.href === 'about:blank') {
-      winRef!.location.href = url;
-    }
+    // if (winRef!.location.href === 'about:blank') {
+    //   winRef!.location.href = url;
+    // }
     return winRef;
   }
 
-  createCDKPortal(data: any, windowInstance: any) {
-    if (windowInstance) {
-      // Create a PortalOutlet with the body of the new window document
-      const outlet = new DomPortalOutlet(
-        windowInstance.document.body,
-        this.componentFactoryResolver,
-        this.applicationRef,
-        this.injector
-      );
-      // Copy styles from parent window
-      document.querySelectorAll('style').forEach((htmlElement) => {
-        windowInstance.document.head.appendChild(htmlElement.cloneNode(true));
-      });
-      // Copy stylesheet link from parent window
-      this.styleSheetElement = this.getStyleSheetElement();
-      windowInstance.document.head.appendChild(this.styleSheetElement);
+  createCDKPortal<T, K>(
+    type: ComponentType<T>,
+    token: InjectionToken<K>,
+    data: any,
+    windowInstance: Window
+  ) {
+    if (!windowInstance) return;
+    // Create a PortalOutlet with the body of the new window document
+    const outlet = new DomPortalOutlet(
+      windowInstance.document.body,
+      this.componentFactoryResolver,
+      this.applicationRef,
+      this.injector
+    );
+    // this.styleSheetElement.onload = () => {
+    // Clear popout modal content
+    windowInstance.document.body.innerText = '';
 
-      this.styleSheetElement.onload = () => {
-        // Clear popout modal content
-        windowInstance.document.body.innerText = '';
+    // Create an injector with modal data
+    const injector = this.createInjector(token, data);
 
-        // Create an injector with modal data
-        const injector = this.createInjector(data);
+    // Attach the portal
+    const componentInstance = this.attachContainer(type, outlet, injector);
 
-        // Attach the portal
-        let componentInstance;
-        if (data.modalName === PopoutModalName.customerDetail) {
-          windowInstance.document.title = 'Customer Modal';
-          componentInstance = this.attachCustomerContainer(outlet, injector);
-        }
-        if (data.modalName === PopoutModalName.employerDetail) {
-          windowInstance.document.title = 'Employer Modal';
-          componentInstance = this.attachEmployerContainer(outlet, injector);
-        }
+    // Copy styles from parent window
+    document.querySelectorAll('style').forEach((htmlElement) => {
+      windowInstance.document.head.appendChild(htmlElement.cloneNode(true));
+    });
+    // // Copy stylesheet link from parent window
+    // this.styleSheetElement = this.getStyleSheetElement();
+    // windowInstance.document.head.appendChild(this.styleSheetElement);
 
-        POPOUT_MODALS['windowInstance'] = windowInstance;
-        POPOUT_MODALS['outlet'] = outlet;
-        POPOUT_MODALS['componentInstance'] = componentInstance;
-      };
-    }
+    // TODO
+    this.POPOUT_MODALS['windowInstance'] = [...this.POPOUT_MODALS['windowInstance'], windowInstance];
+    this.POPOUT_MODALS['outlet'] = [...this.POPOUT_MODALS['outlet'], outlet];
+    this.POPOUT_MODALS['componentInstance'] = [...this.POPOUT_MODALS['componentInstance'], componentInstance];
+    // };
   }
 
   isPopoutWindowOpen() {
     return (
-      POPOUT_MODALS['windowInstance'] && !POPOUT_MODALS['windowInstance'].closed
+      this.POPOUT_MODALS['windowInstance'] && !this.POPOUT_MODALS['windowInstance'].closed
     );
   }
 
   focusPopoutWindow() {
-    POPOUT_MODALS['windowInstance'].focus();
+    this.POPOUT_MODALS['windowInstance'].focus();
   }
 
   closePopoutModal() {
-    Object.keys(POPOUT_MODALS).forEach((modalName) => {
-      if (POPOUT_MODALS['windowInstance']) {
-        POPOUT_MODALS['windowInstance'].close();
+    Object.keys(this.POPOUT_MODALS).forEach((modalName) => {
+      if (this.POPOUT_MODALS['windowInstance']) {
+        this.POPOUT_MODALS['windowInstance'].close();
       }
     });
   }
 
-  attachCustomerContainer(outlet: DomPortalOutlet, injector: Injector) {
-    const containerPortal = new ComponentPortal(
-      CustomerComponent,
-      null,
-      injector
-    );
-    const containerRef: ComponentRef<CustomerComponent> =
-      outlet.attach(containerPortal);
+  attachContainer<T>(
+    type: ComponentType<T>,
+    outlet: DomPortalOutlet,
+    injector: Injector
+  ) {
+    const containerPortal = new ComponentPortal(type, null, injector);
+    const containerRef: ComponentRef<T> = outlet.attach(containerPortal);
     return containerRef.instance;
   }
 
-  attachEmployerContainer(outlet: DomPortalOutlet, injector: Injector) {
-    const containerPortal = new ComponentPortal(
-      EmployerComponent,
-      null,
-      injector
-    );
-    const containerRef: ComponentRef<EmployerComponent> =
-      outlet.attach(containerPortal);
-    return containerRef.instance;
-  }
-
-  createInjector(data: any): Injector {
+  createInjector<T>(token: InjectionToken<T>, data: any): Injector {
     return Injector.create({
       parent: this.injector,
-      providers: [{ provide: POPOUT_MODAL_DATA, useValue: data }],
+      providers: [{ provide: token, useValue: data }],
     });
   }
 
