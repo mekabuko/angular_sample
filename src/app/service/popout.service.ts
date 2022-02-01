@@ -63,8 +63,6 @@ export class PopoutService implements OnDestroy {
       this.applicationRef,
       this.injector
     );
-    // this.styleSheetElement.onload = () => {
-    // Clear popout modal content
     windowInstance.document.body.innerText = '';
 
     // Create an injector with modal data
@@ -78,8 +76,8 @@ export class PopoutService implements OnDestroy {
       windowInstance.document.head.appendChild(htmlElement.cloneNode(true));
     });
     // // Copy stylesheet link from parent window
-    // this.styleSheetElement = this.getStyleSheetElement();
-    // windowInstance.document.head.appendChild(this.styleSheetElement);
+    this.styleSheetElement = this.getStyleSheetElement();
+    windowInstance.document.head.appendChild(this.styleSheetElement);
 
     // TODO
     this.POPOUT_MODALS['windowInstance'] = [...this.POPOUT_MODALS['windowInstance'], windowInstance];

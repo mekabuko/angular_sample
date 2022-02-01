@@ -1,0 +1,34 @@
+.app {
+  .openButton {
+    background: none !important;
+    border: none;
+    color: orange;
+    cursor: pointer;
+    padding-right: 24px;
+    text-transform: uppercase;
+  }
+  .mainBody {
+    font-family: Roboto, Arial, sans-serif;
+    margin: 25px;
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    height: 100%;
+  }
+  .header {
+    text-align: center;
+    padding: 0 10px;
+  }
+  .title {
+    font-size: 32px;
+    font-weight: bold;
+    padding: 0 10px;
+    .name {
+      color: tomato;
+    }
+  }
+
+  .hr {
+    margin: 0 0 40px 0;
+    color: #f3f3f3;
+  }
+}

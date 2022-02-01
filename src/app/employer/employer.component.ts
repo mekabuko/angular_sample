@@ -13,8 +13,7 @@ export const EMPLOYER_POPOUT_MODAL_DATA: InjectionToken<EmployerComponentPopoutD
   new InjectionToken<EmployerComponentPopoutData>('EMPLOYER_POPOUT_MODAL_DATA');
 @Component({
   selector: 'app-employer',
-  templateUrl: './employer.component.html',
-  styleUrls: ['./employer.component.css'],
+  templateUrl: './employer.component.html'
 })
 export class EmployerComponent {
   constructor(

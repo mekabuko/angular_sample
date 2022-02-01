@@ -1,8 +1,9 @@
 import {
   Component,
   Inject,
-  InjectionToken,
+  InjectionToken
 } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 export interface CustomerComponentPopoutData {
   window?: Window;
   modalName: string;
@@ -16,8 +17,7 @@ export const CUSTOMER_POPOUT_MODAL_DATA: InjectionToken<CustomerComponentPopoutD
   new InjectionToken<CustomerComponentPopoutData>('CUSTOMER_POPOUT_MODAL_DATA');
 @Component({
   selector: 'app-customer',
-  templateUrl: './customer.component.html',
-  styleUrls: ['./customer.component.css'],
+  templateUrl: './customer.component.html'
 })
 export class CustomerComponent {
   window?: Window;
@@ -27,7 +27,8 @@ export class CustomerComponent {
   employer?: string;
 
   constructor(
-    @Inject(CUSTOMER_POPOUT_MODAL_DATA) public data: CustomerComponentPopoutData
+    @Inject(CUSTOMER_POPOUT_MODAL_DATA)
+    public data: CustomerComponentPopoutData
   ) {
     this.window = this.data.window;
     this.id = this.data.id;
@@ -37,14 +38,30 @@ export class CustomerComponent {
   }
 
   ngOnInit() {
-    console.log(window)
+    console.log(window);
     if (this.window) {
       this.window.resizeTo(400, 800);
-      this.window.document.title = "testesteste";
-      this.window.addEventListener('resize', (event)=> {
+      this.window.document.title = 'testesteste';
+      this.window.addEventListener('resize', (event) => {
         this.window && this.window.resizeTo(400, 800);
-        console.log("resize")
-      })
+        console.log('resize');
+      });
     }
+  }
+
+  ngAfterViewInit() {
+
+  }
+
+  timePeriods = [
+    'Bronze age',
+    'Iron age',
+    'Middle ages',
+    'Early modern period',
+    'Long nineteenth century',
+  ];
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.timePeriods, event.previousIndex, event.currentIndex);
   }
 }
